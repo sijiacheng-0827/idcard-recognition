@@ -1,0 +1,72 @@
+1，接口定义
+
+typedef enum
+{
+	CARD_DIRTY_UNKNOWN = -1,  // 未知
+	CARD_DIRTY_NO = 0,        // 正常
+	CARD_DIRTY_YES = 1        // 脏污
+} CardDirtyState;
+
+
+typedef enum
+{
+	ICDT_NAME = 0,
+	ICDT_GENDER,
+	ICDT_NATION,
+	ICDT_BIRTH,
+	ICDT_ADDRESS,
+	ICDT_CARDNO,
+	ICDT_AUTH,
+	ICDT_VALIDATE
+} IdCardDirtyArea;
+
+
+/**
+  * 二代证脏污&遮挡检测
+  *
+  *	参数：
+		front - (in) 二代证正面图像路径
+		back - (in) 二代证背面图像路径
+		results - (out) 检测结果，取值：-1=未知，0=正常，1=异常（脏污或遮挡）
+
+		说明：根据数组下标获取对应区域的检测结果：
+			results[0] 表示 姓名区域
+			results[1] 表示 性别区域
+			results[2] 表示 民族区域
+			results[3] 表示 生日区域
+			results[4] 表示 住址区域
+			results[5] 表示 号码区域
+			results[6] 表示 人脸区域
+			results[7] 表示 国徽区域
+			results[8] 表示 签发机关区域
+			results[9] 表示 有效期限区域
+			results[10] 表示 正面其它区域
+			results[11] 表示 背面其它区域
+
+	返回值：
+		0 - 执行成功，-1 - 执行失败
+ */
+
+int idcard_dirty_detect(const char* front, const char* back, int* results);
+
+说明：接口0~9定义了二代证文本区域脏污检测结果，10~11定义除0~9之外区域的脏污检测结果；检测结果暂不支持的直接返-1
+
+
+
+2，需要支持的系统平台
+
+windows 7/8/10/11 ，android ，国产（Linux）系统
+
+国产系统需要适配的处理器架构有飞腾、兆芯以及龙芯，操作系统主要有麒麟和UOS
+
+说明：当前工行、建行招标已经在使用的系统配置为麒麟+飞腾，需要优先适配此国产系统和windows系统
+
+
+
+3，接口形式
+
+windows输出标准DLL库，安卓和Linux输出so库，库需要解决外部库的依赖问题
+
+CRT-7xxx证卡扫描模块动态库集成时以动态加载（强制）方式调用
+
+跟库一起打包提供c/c++例程源码、测试demo(界面demo可选择图片/命令行工具可输入图片路径)
